@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Battleships</title>
+    <!-- <link rel="stylesheet" href="css/base.css" /> -->
+    <script src="lib/react.js"></script>
+    <script src="lib/react-dom.js"></script>
+    <script src="lib/browser.js"></script>
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/marked.min.js"></script>
+    <style type="text/css">
+    * { box-sizing: border-box; }
+    .board { display: table; float: left; }
+    .row { display: table-row; }
+    .cell { display: table-cell; width: 30px; height: 30px; border: 1px solid #888; border-collapse: collapse; }
+    .cell:hover { background-color: #eee; }
+    .heading { background-color: #eee; }
+    .cell.hit { background-color: #afa; }
+    .cell.miss { background-color: #faa; }
+
+    .log { display: inline-block; vertical-align: top; float: left; list-style: none; max-height: 330px; overflow-y: auto; margin: 0; width: 250px; }
+    .eventNumber { display: inline-block; width: 20px; text-align: center; color: #999; }
+    .location { display: inline-block; width: 38px; color: #46d; text-align: center; }
+    .event.hit { color: #3c3; }
+    .event.miss { color: #c33; }
+
+    .progress { float: left; clear: both; font-size: 20px; width: 330px; display: inline-block; text-align: center; margin-top: 10px; }
+    .sunk { color: #3c3; }
+    .sunk:after { content: " / "; color: black; }
+    .total { color: #c33; }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/babel" src="battleships.js"></script>
+  </body>
+</html>
