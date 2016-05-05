@@ -54,6 +54,7 @@ class Board extends React.Component
 class Cells
   constructor: (@size) ->
     @cells = ((0 for x in [0...@size]) for y in [0...@size])
+    @ships = []
 
   addRandomShip: (shipSize)->
     while true
@@ -62,7 +63,9 @@ class Cells
       isVertical = (Math.random() < 0.5)
       [dx, dy] = if isVertical then [0, 1] else [1, 0]
       if @cellsEmpty x, y, dx, dy, shipSize
-        @setCells x, y, dx, dy, shipSize, shipSize
+        shipIndex = @ships.length
+        @ships.push x: x, y: y, dx: dx, dy: dy, shipSize: shipSize, aliveCells: shipSize
+        @setCells x, y, dx, dy, shipSize, shipIndex + 1
         break
 
   cellsEmpty: (x, y, dx, dy, count)->
@@ -86,10 +89,21 @@ class Cells
   alreadyFiredAt: (x, y)->
     @cells[y][x] == 'miss' || @cells[y][x] < 0
 
+  # returns:
+  #  shipSize (positive number) if hit a ship but the ship is has not sunk
+  #  -1 * shipSize (negative number) if hit a ship and sunk
+  #  0 otherwise (missed)
   fireAt: (x, y)->
     if @cells[y][x] > 0
+      shipIndex = @cells[y][x] - 1
+      ship = @ships[shipIndex]
+      ship.aliveCells--
+      sunk = (ship.aliveCells == 0)
       @cells[y][x] *= -1
-      Math.abs @cells[y][x]
+      if sunk
+        -ship.shipSize
+      else
+        ship.shipSize
     else
       @cells[y][x] = 'miss'
       0
@@ -103,6 +117,8 @@ class Log extends React.Component
       for log, i in @props.logs
         if log.ship > 0
           message = 'Hit. '+@props.shipNames[log.ship]
+        else if log.ship < 0
+          message = 'Sunk. '+@props.shipNames[-log.ship]
         else
           message = 'Miss.'
 
@@ -127,15 +143,15 @@ class BattleShip extends React.Component
     @state =
       logs: []
       cells: @generateRandomBoard props.size, props.ships
-      totalShipCells: @countShipCells props.ships
-      sunkShipCells: 0
+      totalShip: @countShipCells props.ships
+      sunkShip: 0
 
   render: ->
     React.createElement 'div',
       className: 'battleship'
       React.createElement Board, size: @props.size, onClickCell: @handleClickCell
       React.createElement Log, logs: @state.logs, shipNames: @props.shipNames
-      React.createElement Progress, sunk: @state.sunkShipCells, total: @state.totalShipCells
+      React.createElement Progress, sunk: @state.sunkShip, total: @state.totalShip
 
   generateRandomBoard: (size, ships)->
     cells = new Cells size
@@ -146,8 +162,8 @@ class BattleShip extends React.Component
 
   countShipCells: (ships)->
     sum = 0
-    for count, shipSize in ships
-      sum += count * shipSize
+    for count in ships
+      sum += count
     sum
 
   handleClickCell: (rowIndex, colIndex)=>
@@ -155,9 +171,9 @@ class BattleShip extends React.Component
     ship = @state.cells.fireAt colIndex, rowIndex
     @state.logs.push ship: ship, x: colIndex, y: rowIndex
     @setState cells: @state.cells, logs: @state.logs
-    if ship > 0
-      @setState sunkShipCells: @state.sunkShipCells + 1
-    ship
+    if ship < 0
+      @setState sunkShip: @state.sunkShip + 1
+    Math.abs ship
 
 ReactDOM.render(
   React.createElement(BattleShip, {size: N, ships: ships, shipNames: SHIP_NAMES}),
