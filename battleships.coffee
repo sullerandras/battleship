@@ -7,11 +7,17 @@ class EmptyCell extends React.Component
     React.createElement 'div',
       className: 'cell empty'
 
+  shouldComponentUpdate: (nextProps, nextState)->
+    false
+
 class CellHeading extends React.Component
   render: ->
     React.createElement 'div',
       className: 'cell heading'
       @props.content
+
+  shouldComponentUpdate: (nextProps, nextState)->
+    false
 
 class RowHeading extends React.Component
   render: ->
@@ -19,6 +25,9 @@ class RowHeading extends React.Component
       className: 'row heading'
       React.createElement EmptyCell, null
       (React.createElement CellHeading, key: i, content: i + 1 for i in [0...@props.size])
+
+  shouldComponentUpdate: (nextProps, nextState)->
+    false
 
 class Cell extends React.Component
   constructor: ->
@@ -29,6 +38,9 @@ class Cell extends React.Component
       className: 'cell '+@state.className, onClick: @handleClick
       @state.content
 
+  shouldComponentUpdate: (nextProps, nextState)->
+    @state.className != nextState.className
+
   handleClick: (e)=>
     ship = @props.onClickCell @props.rowIndex, @props.colIndex
     if ship > 0
@@ -37,12 +49,22 @@ class Cell extends React.Component
       @setState className: 'miss'
 
 class Row extends React.Component
+  constructor: ->
+    @state = cellsClicked: 0
+
   render: ->
     React.createElement 'div',
       className: 'row'
       React.createElement CellHeading, content: String.fromCharCode(65 + @props.rowIndex)
       (React.createElement(Cell,
-        key: i, rowIndex: @props.rowIndex, colIndex: i, onClickCell: @props.onClickCell) for i in [0...@props.size])
+        key: i, rowIndex: @props.rowIndex, colIndex: i, onClickCell: @handleClickCell) for i in [0...@props.size])
+
+  handleClickCell: (rowIndex, colIndex)=>
+    @setState cellsClicked: @state.cellsClicked + 1
+    @props.onClickCell rowIndex, colIndex
+
+  shouldComponentUpdate: (nextProps, nextState)->
+    @state.cellsClicked != nextState.cellsClicked
 
 class Board extends React.Component
   render: ->
