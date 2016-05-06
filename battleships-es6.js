@@ -1,5 +1,5 @@
 var shipSizes  = [0,    0,    4,           8,           4,            4]
-var SHIP_NAMES = [null, null, 'Destroyer', 'Submarine', 'Battleship', 'Carrier']
+var SHIP_NAMES = [null, null, "Destroyer", "Submarine", "Battleship", "Carrier"]
 var N = 20
 
 class EmptyCell extends React.Component {
@@ -48,15 +48,15 @@ class Cell extends React.Component {
   }
 
   getClassName() {
-    var className = ''
+    var className = ""
     if (this.state.ship && this.state.ship.sunk) {
-      className = 'sunk hit'
+      className = "sunk hit"
     } else if (this.state.ship) {
-      className = 'hit'
+      className = "hit"
     } else if (this.state.hit) {
-      className = 'miss'
+      className = "miss"
     }
-    return 'cell '+className
+    return "cell "+className
   }
 
   getShipSize() {
@@ -65,7 +65,7 @@ class Cell extends React.Component {
     }
   }
 
-  handleClickCell(e, f, g) {
+  handleClickCell() {
     if (this.state.hit) {
       return
     }
@@ -220,7 +220,7 @@ class Log extends React.Component {
             </li>
           )}
         </ul>
-        : ''}
+        : ""}
       </div>
     )
   }
@@ -311,5 +311,5 @@ class BattleShip extends React.Component {
 
 ReactDOM.render(
   <BattleShip  size={N} shipSizes={shipSizes} shipNames={SHIP_NAMES}/>,
-  document.getElementById('content')
+  document.getElementById("content")
 )
